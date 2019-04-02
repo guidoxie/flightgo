@@ -15,13 +15,13 @@
 
 
 ### 几张图片
-![](./img/img1)
-![](./img/img2)
-![](./img/img3)
-![](./img/img4)
-![](./img/img5)
-![](./img/img6)
-![](./img/img7)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img1.png)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img2.png)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img3.png)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img4.png)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img5.png)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img6.png)
+![](https://github.com/duanhunyiye/flightgo/blob/master/img/img7.png)
 ### 项目网址
 ```
 http://www.d41216.cn
