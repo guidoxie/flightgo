@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="FlightGo:小叶 傻彪 老杨">
+    <title>FlightGo</title>
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 echarts.js -->
+    <script src="/static/js/echarts.min.js"></script>
+    <script src="/static/js/echarts-gl.min.js"></script>
+    <script type="text/javascript" src="/static/js/airportGPS.js"></script>
+    
+    <script src="http://api.map.baidu.com/api?v=2.0&ak= Qw8DtTDH9VASQjH61iigWUVEVp67tgR0"></script>
+    <script type="text/javascript" src="/static/js/bmap.min.js"></script>
+    <script type="text/javascript" src="/static/js/airlines.js"></script>
+   
+    <link rel="stylesheet" href="/static/css/button.css">
+    <link rel="stylesheet" href="/static/css/focus.css">
+    <link rel="stylesheet" href="/static/css/filter.css">
+    <style type="text/css">
+        .anchorBL{display:none}
+
+        
+        html, body, #main {
+            
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        #map-btn{
+            position: fixed;
+            color: #ccc;
+            z-index: 99;
+            left: 25px;
+            bottom: 20px;
+        }
+        
+        #count{
+            position: fixed;
+            
+            bottom: 20px;
+            left: 50%;
+            margin-left: -112px;
+        }
+
+        .alert{
+            padding: 8px;
+            margin-bottom: -6px;
+
+        }
+
+        .alert-info{
+            overflow: hidden;
+        }
+        #search-fl-no{
+            
+            display: none;
+            color: #ccc;
+        }
+        #search-div{
+            
+            z-index: 99;
+            color: #ccc;
+            position: fixed;
+            right: 20px;
+            top: 20px;
+        }
+
+        .search{
+          margin-left: 30px;
+          margin-right: 10px;
+
+        }
+        .form-group{
+          
+          margin-left:0px;
+          margin-right:20px;
+        }
+
+        
+        #data-view{
+            position: fixed;
+            
+            z-index: 99;
+            right: 25px;
+            bottom: 15px;
+        }
+
+       
+        .zoomeffect img{
+            margin: 0 0 0 0;
+        }
+        /* 切换类型查询*/
+        #btn-sw-search-type{
+            height: 35px;
+            width: 182px;
+            background-color: #FFFFFF;
+            border:1px solid #C2C2C2;
+            border-radius:8px;
+
+        }
+        .btn-lg{
+            padding: 6px 15px;
+            font-size: 14px;
+        }
+        
+        .action{
+            color: #FFFFFF;
+            background-color: #3D86E5;
+        }
+
+        a{
+            color: #9e9e9e;
+        }
+        /*提示框宽度*/
+        .typeahead{
+            width: 50px;
+        }
+        
+        #tip{
+            position:absolute;
+            top:48px;
+            display: none;
+        }
+
+        /* 帮助样式 */
+        .help{
+            position:absolute;
+            z-index:5555;
+            top: 0px;
+            width:100%;
+            height:100%;
+            
+            display: none;
+        }
+        
+        .blank-left-top {
+            position: absolute;
+            border:2px solid #1E90FF;
+            left: 2px;
+            top: 1px;
+            width: 195px;
+            height: 200px; 
+        }
+
+        .blank-right-top {
+            position: absolute;
+            border:2px solid #1E90FF;
+            right: 2px;
+            top: 1px;
+            width: 95px;
+            height: 95px; 
+        }
+        
+        .blank-date { 
+            position: absolute;
+            border:2px solid #1E90FF;
+            right: 148px;
+            top: 20px;
+            width: 13em;
+            height: 53px;
+        }
+
+        .blank-left-bottom {
+            position: absolute;
+            border:2px solid #1E90FF;
+            left: 25px;
+            bottom: 9px;
+            width: 106px;
+            height: 54px;  
+        }
+
+
+        .blank-right-bottom {
+            position: absolute;
+            border:2px solid #1E90FF;
+            right: 10px;
+            bottom: 8px;
+            width: 88px;
+            height: 66px;  
+        }
+
+
+        .help p {
+            color: white;
+        }
+        .help .help-title {
+            font-size:30px;
+            font-weight:bold;
+            
+        }
+
+        .tip-content {
+            display: inline-block;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+        
+        .help .step{
+            
+            color:#eee;
+            padding:0 20px 15px;
+            background: rgba(30, 144, 255, 0.9);
+            border-radius:5px;
+        }
+        .help .step .jt{
+            font-size:0;
+            height:0;
+            border:20px solid rgba(0, 0, 0, 0);
+            position:absolute;
+        }
+
+        .help .step .jt_step1 {
+
+            border-right:20px solid rgba(30, 144, 255, 0.9);
+            top:50%;left:-40px;
+        }
+
+
+        .help .step .jt_step2 {
+
+            border-left:20px solid rgba(30, 144, 255, 0.9);
+            top:8%;right:-40px;
+        }
+        .help .step .jt_step3 {
+
+            border-bottom:20px solid rgba(30, 144, 255, 0.9);
+            top:-40px;left: 66px;
+        }
+
+        .help .step .jt_step4 {
+
+            border-top:20px solid rgba(30, 144, 255, 0.9);
+            bottom:-40px;left: 36px;
+        }
+
+        .help .step .jt_step5 {
+
+            border-top:20px solid rgba(30, 144, 255, 0.9);
+            bottom:-40px;right: 13px;
+        }
+
+        .help .step .next,
+        .help .step .over{
+            border:1px solid #fff;
+            color:#fff;
+            padding:0 5px;
+            font-size: 18px;
+
+        }
+        .help .step .next,
+        .help .step .end-over{
+            float: right;
+        }
+        .help .step .next:hover,
+        .help .step .over:hover{
+            background:none rgba(50, 50, 50, 0.7)
+        }
+
+        .help a {
+            text-decoration:none;color:#ccc;outline:none;
+            cursor:default;
+        }
+        .help a:hover {
+            text-decoration:none
+        }
+
+        #blank, #step1,#step2,#step3,#step4,#step5{
+            display: none;
+        }
+
+        #step1 {
+            position: absolute;
+            top: 25px;
+            left: 220px;
+
+        }
+
+        #step2 {
+            position: absolute;
+            top: 25px;
+            right: 120px;
+        }
+
+        #step3 {
+
+            position: absolute;
+            top: 95px;
+            right: 42px;
+        }
+
+        #step4 {
+            position: absolute;
+            bottom: 95px;
+            left: 23px;
+        }
+
+        #step5 {
+            position: absolute;
+            bottom: 95px;
+            right: 23px;
+        }
+
+    </style>  
+</head>
+<body>
+    
+    
+    <div id="search-div" class="row">
+        
+        <div id="show-search" class="col-xs-1">
+            <a title="查询" class="zoomeffect" >
+                <img  src="/static/img/search.png" width="55px"/>
+            </a>
+        </div>
+
+        <div class="col-xs-11" id="search-fl-no">
+
+             <form name="form" class="navbar-form navbar-center navbar-right" action="/search/" method="get" onsubmit="return check_form()">
+
+                <div id="btn-sw-search-type" class="form-group" >
+                        <a id="fn" class="btn btn-lg action">按航班号</a>
+                        <a id="od" class="btn btn-lg">按起降点</a>
+                        <input id="search-type" type="hidden" name="search-type" value="0">
+                </div>
+
+                <div class="form-group form-group-no">
+                  <input id="fn-in" type="text" name="flight_no" size="15" value="" placeholder="航班号 如：CA981" class="form-control flight-no">
+                </div>
+
+                <div class="form-group form-group-od">
+                  <input id="od-in0" data-provide="typeahead" data-items="4"
+                   type="hidden" size="12" name="flight_od_o" value="" placeholder="起飞地" class="form-control flight-od" onfocus="show_tip(this,true)" onblur="show_tip(this,false)" autocomplete="off">
+                  
+                    <img id="yqf" style="display: none;" src="/static/img/yqf.png" width="35px"/>
+                  
+                  <input id="od-in1" data-provide="typeahead" data-items="4"
+                  type="hidden" size="12" name="flight_od_d" value="" placeholder="降落地" class="form-control flight-od" onfocus="show_tip(this,true)" onblur="show_tip(this,false)" autocomplete="off">
+                  <div id="tip">
+                        <div id="cityFilterBox">
+                            <div class="cityFilterIn">
+                              <div class="cityFilterHead">
+                                <ul class="clearfix">
+                                  <li class="">热门</li>
+                                </ul>
+                              </div>
+                              <div class="cityFilterTable" id="cityFilterTable">
+                                <div class="cityFilterHot">
+                                  <ul>
+                                    <li style="padding-left:0">
+                                      <div class="cityFilterLabel"></div>
+                                      <div id="airport-name" class="cityByHot clearfix">
+                                        <span code="PEK">北京首都</span>
+                                        <span code="CAN">广州白云</span>
+                                        <span code="PVG">上海浦东</span>
+                                        <span code="SHA">上海虹桥</span>
+                                        <span code="CTU">成都双流</span>
+                                        <span code="SZX">深圳宝安</span>
+                                        <span code="KMG">昆明长水</span>
+                                        <span code="XIY">西安咸阳</span>
+                                        <span code="CKG">重庆江北</span>
+                                        <span code="HGH">杭州萧山</span>
+                                        <span code="XMN">厦门高崎</span>
+                                        <span code="NKG">南京禄口</span>
+                                        <span code="WUH">武汉天河</span>
+                                        <span code="SHE">沈阳桃仙</span>
+                                        <span code="TAO">青岛流亭</span>
+                                        <span code="FOC">福州长乐</span>
+                                        <span code="SYX">三亚凤凰</span>
+                                        <span code="TSN">天津滨海</span>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                  </div>      
+                </div>
+
+                <div class="form-group">
+                   <div class="input-group date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                    <input class="form-control data-input" size="10" type="text" value="2018-02-01" readonly>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                    <input type="hidden" id="dtp_input2" name="date" value="2018-02-01"/>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success navbar-right search">查询</button>
+                </div>
+                
+            </form>
+        </div>
+
+        
+        
+    </div>
+   
+    <div id="main"></div>
+    
+    <div id="map-btn">
+        
+        <div class="map-cg-btn" id="map-cg-btn">
+          
+          <a class="af-btn" id="btn-3d" href="#">3D</a> 
+          <a class="be-btn" id="btn-2d" href="#">2D</a>
+        </div>
+
+    </div>
+    <div id="count">
+        <div class="alert alert-info" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <span id="count_flight">全球共有 0 个航班</span>
+        </div>
+    </div>
+
+    <div id="data-view">
+        <a id="data-view-a" title="数据详情" class="zoomeffect" href="/details/2018/02/01/">
+        <img src="/static/img/data-view2.png" width="55px"/></a>
+    </div>
+
+    <!-- 帮助提示 -->
+    <div class="help">
+        <div id="blank" class="blank-left-top" id="step0">
+            
+        </div>
+
+        <!-- 航班筛选 -->
+        <div id="step1" class="step" step="1" style="width:280px">
+
+            <b class="jt jt_step1"></b>
+            <p>
+                <span class="help-title">航司切换</span>
+                <br> <span class="tip-content">筛选不同的航空公司，进行航线显示</span><br>
+                
+                <a class="next">下一步</a>
+                <a class="over">已了解所有操作</a>
+
+            </p>
+        </div>
+
+        <!-- 搜索 -->
+        <div id="step2" class="step" step="2" style="width:280px">
+
+            <b class="jt jt_step2"></b>
+            <p>
+                <span class="help-title">搜索显示</span>
+                <br><span class="tip-content">点击可打开搜索功能，可根据航班号或起降点进行航班搜索</span><br>
+                <a class="next">下一步</a>
+                <a class="over">已了解所有操作</a>
+            </p>
+        </div>
+
+        <!-- 日期 -->
+        <div id="step3" class="step" step="3" style="width:280px">
+
+            <b class="jt jt_step3"></b>
+            <p>
+                <span class="help-title">日期选择</span>
+                <br><span class="tip-content">日期可用于航线搜索，也可单独使用，单独使用时，可把指定日期的航线，显示在地图上</span></br>
+
+                <a class="next">下一步</a>
+                <a class="over">已了解所有操作</a>
+            </p>
+        </div>
+
+        <!-- 3D/2D切换 -->
+        <div id="step4" class="step" step="4" style="width:280px">
+
+            <b class="jt jt_step4"></b>
+            <p>
+                <span class="help-title">地图切换</span>
+                <br><span class="tip-content">可进行2D、3D地图的切换</span></br>
+                <a class="next">下一步</a>
+                <a class="over">已了解所有操作</a>
+            </p>
+        </div>
+
+        <!-- 数据详情 -->
+
+        <div id="step5" class="step" step="5" style="width:280px">
+
+            <b class="jt jt_step5"></b>
+            <p>
+                <span class="help-title">数据详情</span>
+                <br> <span class="tip-content">显示当前日期的航班数据的详情，包括航班号、起降点、机型等</span><br>
+                <a class="over end-over">已了解所有操作</a>
+            </p>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap3-typeahead.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/js/locales/bootstrap-datetimepicker.fr.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+    <!--
+    <script type="text/javascript" src="/static/js/nav.js"></script>
+    -->
+    <script type="text/javascript">
+        // 基于准备<div id="test"></div>好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        //地图形式，默认3D
+        var map_type = 3;  
+        
+        var create_url = function(date){
+            var a_date = date.split('-');
+            return "/api/flights/"+a_date[0]+"/"+a_date[1]+"/"+a_date[2]+"/";
+        };
+        var create_l3D_series = function(datas){
+            var count_flight = 0;
+            var res = [];
+            for(airline in datas){
+                
+                var se = {
+                    type:'lines3D',
+                    name: (function(al){
+                        if(al == "AA" || al == "CA" || al == "MU" || al == "AK" || al == "BA" || al == "UA"){
+                            return airlinesName[al];
+                            
+                        }else{
+                            return "当天其他航班";
+                        }
+                    })(airline),
+                    oordinateSystem: 'globe',
+                        //叠加高亮 'rgb(50, 50, 150)'
+                        blendMode: 'lighter',
+                    
+                    lineStyle: {
+                        width: 1,
+                        color: 'rgb(50, 50, 150)',
+                        opacity: 0.8
+                    },
+                    
+                    effect:{
+                        show:true,
+                        trailWidth:1
+                    },
+                    data:datas[airline].map(function(item){
+                        //alert()
+                        
+                        count_flight = count_flight +1;
+                        return [
+                            [
+                            geoCoordMap[item['origin']][0],
+                            geoCoordMap[item['origin']][1]
+                            ],
+                            [
+                            geoCoordMap[item['destination']][0],
+                            geoCoordMap[item['destination']][1]
+                            ]
+                        ]
+                        /*
+                        if(item['state'] == 4){
+
+                            return {
+                                coords:[[
+                                    geoCoordMap[item['origin']][0],
+                                    geoCoordMap[item['origin']][1]
+                                    ],
+                                    [
+                                    geoCoordMap[item['destination']][0],
+                                    geoCoordMap[item['destination']][1]
+                                ]],
+                                lineStyle:{
+                                    width: 4,
+                                    color: '#EE0000',
+                                    opacity: 0.8
+                                }
+                            }
+                        }else if(item['state'] == 6){
+                            count_flight = count_flight +1;
+                            return {
+                                coords:[[
+                                    geoCoordMap[item['origin']][0],
+                                    geoCoordMap[item['origin']][1]
+                                    ],
+                                    [
+                                    geoCoordMap[item['destination']][0],
+                                    geoCoordMap[item['destination']][1]
+                                ]],
+                                lineStyle:{
+                                    width: 1,
+                                    color: '#FF8247',
+                                    opacity: 0.8
+                                }
+                            }
+                        }else{
+                            count_flight = count_flight +1;
+                            return [
+                                [
+                                geoCoordMap[item['origin']][0],
+                                geoCoordMap[item['origin']][1]
+                                ],
+                                [
+                                geoCoordMap[item['destination']][0],
+                                geoCoordMap[item['destination']][1]
+                                ]
+                            ]
+                        }
+                        */
+
+                    })
+                }
+                res.push(se);
+                
+            }
+
+            //$('#count_flight').text("当天全球共有 "+count_flight.toString()+" 个航班");
+            document.getElementById('count_flight').innerHTML=input.value+" 全球共有 "+'<b><u id="text"></u></b>'+ " 个航班";
+            document.getElementById('text').innerText=count_flight.toString();
+            return res
+
+        };
+        
+        var create_l2D_series = function(datas){
+            var res = [];
+            for(airline in datas){
+                
+                var se = {
+                    type: 'lines',
+                    name: (function(al){
+                        if(al == "AA" || al == "CA" || al == "MU" || al == "AK" || al == "BA" || al == "UA"){
+                            return airlinesName[al];
+                            
+                        }else{
+                            return "当天其他航班";
+                        }
+                    })(airline),
+                    coordinateSystem: 'bmap',
+                    
+                    //zlevel:10,
+                    //开启绘制优化的阈值。
+                    large:true,
+                    largeThreshold: 1000,
+
+                    lineStyle: {
+                        normal: {
+                            color:'#EE7600',
+                            opacity: 0.4,
+                            width: 1,
+
+                            curveness: 0.3
+                        }
+                    },
+                    // 设置混合模式为叠加
+                    blendMode: 'lighter',
+                    data:datas[airline].map(function(item){
+                        //alert()
+                        
+                        return {
+                        
+                            name:geoCoordMap[item['origin']][2]+' - '+geoCoordMap[item['destination']][2]+'<br>'+"航班号："+item['ident'],
+                            coords:[[
+                                geoCoordMap[item['origin']][0],
+                                geoCoordMap[item['origin']][1]
+                                ],
+                                [
+                                geoCoordMap[item['destination']][0],
+                                geoCoordMap[item['destination']][1]]]
+                        }
+                        /*
+                        return [
+                            [
+                            geoCoordMap[item['origin']][0],
+                            geoCoordMap[item['origin']][1]
+                            ],
+                            [
+                            geoCoordMap[item['destination']][0],
+                            geoCoordMap[item['destination']][1]
+                            ]
+                        ]
+                        */
+                    })
+                };
+                
+                res.push(se);
+
+            }
+
+            return res
+
+        };
+
+        // 指定图表的配置项和数据
+        var option_3D = {
+            renderMode: 0,
+            backgroundColor:'#000',
+            tooltip:{
+                trigger:'item'
+            },
+            legend: {
+                
+                selectedMode: 'single',
+                left: 'left',
+                data: [airlinesName["CA"],airlinesName["AA"],
+                    airlinesName["MU"],airlinesName["AK"],airlinesName["BA"],airlinesName["UA"],"当天其他航班"],
+                orient: 'vertical',
+                textStyle: {
+                    fontSize:18,
+                    color: '#fff'
+                }
+            },
+            globe:{
+
+                //地球的纹理。支持图片路径字符串，图片或者 Canvas 的对象。
+                baseTexture:'static/img/world.topo.bathy.200401.jpg',
+                //地球的高度纹理
+                //heightTexture:'/static/img/bathymetry_bw_composite_4k.jpg',
+                //环境贴图，支持純颜色值，渐变色，全景贴图的 url。
+                environment:'/static/img/starfield.jpg',
+                //地球中三维图形的着色效果
+                shading:'color',
+                //光照相关的设置。在 shading 为 'color' 的时候无效。
+                light:{
+                    ambient:{
+                        intensity:0.5
+                    },
+                    main:{
+                        intensity:1
+                    }
+                },
+                globeRadius: 52,
+                viewControl:{
+                    autoRotateSpeed:5
+                }
+            }
+        };
+         // 指定图表的配置项和数据
+        var option_2D = {
+            //禁用移动动画
+            animation: false,
+            
+            tooltip:{
+                trigger:'item'
+            },
+            legend: {
+                
+                selectedMode: 'single',
+                left: 'left',
+                data: [airlinesName["CA"],airlinesName["AA"],
+                    airlinesName["MU"],airlinesName["AK"],airlinesName["BA"],airlinesName["UA"],"当天其他航班"],
+                orient: 'vertical',
+                inactiveColor:'#575757',
+                textStyle: {
+                    color: '#EE7600',
+                    fontSize:18,
+
+                }
+            },
+
+            // 加载 bmap 组件
+            bmap: {
+                // 百度地图中心经纬度
+                center: [30, 400],
+                // 百度地图缩放
+                zoom: 3,
+                // 是否开启拖拽缩放，可以只设置 'scale' 或者 'move'
+                roam: true,
+                // 百度地图的自定义样式，见 http://developer.baidu.com/map/jsdevelop-11.htm
+                
+            },
+            
+            
+        };
+        myChart.setOption(option_3D);
+        //获取日期
+        var input = document.getElementById('dtp_input2');
+        var currently_date = input.value;
+
+        $.getJSON(create_url(input.value),function(json_datas){
+           
+            
+            option_3D['series'] = create_l3D_series(json_datas["data"]);
+
+            myChart.clear();
+            myChart.setOption(option_3D);
+
+            //$.removeCookie('tipVisible',{ path: '/'}); 
+            
+            if(!$.cookie('tipVisible')){
+                show_help();
+            }
+            
+            option_2D['series'] = create_l2D_series(json_datas["data"])
+            //myChart.setOption(option_2D);
+        });
+       
+        var mydiv_resize=function(){
+
+            var opt = {
+                width:"auto",
+                height:"auto"
+            };
+            if(map_type ==2 ){
+                myChart.clear();
+                myChart.resize(opt);
+                myChart.setOption(option_2D);
+            }
+            myChart.resize(opt);
+        }
+        window.onresize=mydiv_resize
+
+        $('.form_date').datetimepicker({
+            language:  'en',
+            weekStart: 1,
+            todayBtn:  1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0
+        });
+
+
+        //监听日期改变
+        var update_data = function(){
+            if(input.value != currently_date){
+                currently_date = input.value;
+                $.getJSON(create_url(input.value),function(json_datas){
+           
+                option_3D['series'] = create_l3D_series(json_datas["data"]);
+                option_2D['series'] = create_l2D_series(json_datas["data"])
+                
+                myChart.clear();
+                if(map_type == 3){
+                    myChart.setOption(option_3D);
+                }else if(map_type == 2){
+                    myChart.setOption(option_2D);
+                }
+                
+                });
+               
+                var a_date =  input.value.split('-');
+                $('#data-view-a').attr("href","/details/"+a_date[0]+'/'+a_date[1]+'/'+a_date[2]+'/');
+            }
+        }
+        //日期
+        $('.today').click(function(){
+            setTimeout(update_data,500);
+        });
+
+        $('tbody').click(function(){
+            
+            setTimeout(update_data,500);
+            
+        });
+        
+
+        
+        //类型
+        $("#fn").click(function() {
+            $("#od").removeClass("action");
+            $(this).addClass("action");
+            $(".flight-od").attr("type","hidden");
+            $(".flight-no").attr("type","text");
+            $("#search-type").attr("value","0");
+
+            $("#yqf").attr("style","display: none;");
+        });
+        $("#od").click(function() {
+            $("#fn").removeClass("action");
+            $(this).addClass("action");
+            $(".flight-od").attr("type","text");
+            $(".flight-no").attr("type","hidden");
+            $("#search-type").attr("value","1");
+            $("#yqf").attr("style","");
+        });
+
+        $("#yqf").click(function(){
+            var value1 = document.getElementById("od-in0").value;
+            var value2 = document.getElementById("od-in1").value;
+
+            document.getElementById("od-in0").value=value2;
+            document.getElementById("od-in1").value=value1;
+        });
+        //输入框提示
+        $.getJSON('/api/airports/',function(resp){
+            $("#od-in0").typeahead({source:resp["data"],updater:name_updater});
+            $("#od-in1").typeahead({source:resp["data"],updater:name_updater});
+        });
+        
+        //选中提示分割
+        name_updater = function(item){
+            
+            return item.split(" - ")[1]
+        }
+        $('#btn-2d').click(function(){
+
+            if(map_type == 3){
+                //换样式
+                $('#btn-2d').removeClass();
+                $('#btn-3d').removeClass();
+                $('#btn-2d').addClass("af-btn");
+                $('#btn-3d').addClass("be-btn");
+                //释放
+                myChart.clear();
+                echarts.dispose(myChart);
+                myChart = echarts.init(document.getElementById('main'));
+                myChart.setOption(option_2D);
+                map_type = 2;
+            }
+            
+        });
+        $('#btn-3d').click(function(){
+
+            if(map_type == 2){
+                //换样式
+                $('#btn-2d').removeClass();
+                $('#btn-3d').removeClass();
+                $('#btn-2d').addClass("be-btn");
+                $('#btn-3d').addClass("af-btn");
+                //释放
+                myChart.clear();
+                echarts.dispose(myChart);
+                myChart = echarts.init(document.getElementById('main'));
+                myChart.setOption(option_3D);
+                map_type = 3;
+            }
+            
+        });
+        
+        //控制显示或隐藏搜索框
+        $(document).ready(function(){
+
+            $("#show-search").click(function(){
+            $("#search-fl-no").toggle("slow");
+            });
+        });
+
+
+        //检查表单是否为空
+      function check_form()
+      {
+        
+        var type = $("#search-type").attr("value");
+        
+        if(type=="0"){
+
+            var fn  = $("#fn-in").val();
+            
+            var date = $("#dtp_input2").attr("value");
+            
+            if(fn != "" && date !=""){
+                return true;
+            }
+
+        }else if(type=="1"){
+
+            var o = $("#od-in0").val();
+            var d = $("#od-in1").val();
+            var date = $("#dtp_input2").attr("value");
+            
+
+            if(o != "" && d != "" && date != ""){
+                return true;
+            }
+
+        }
+        alert("请正确输入查询项");
+        return false;
+     
+      }
+
+      //点选机场
+       var in_type = 0;
+
+       function show_tip(ele,hasFocus){
+            var tip = document.getElementById("tip");
+            if(hasFocus){
+                
+                if(ele.id == 'od-in0'){
+                    in_type = 0;
+                }else if(ele.id == 'od-in1'){
+                    in_type = 1;
+                }
+                setTimeout("hidden(true)","150");
+            }else{
+                setTimeout("hidden(false)","150");
+            }
+           
+       }
+       
+       function hidden(hasFocus){
+            var tip = document.getElementById("tip");
+            if(hasFocus){
+                tip.style.display = "block";
+            }else{
+
+                tip.style.display = "none";
+            }
+                
+        }
+       var aSpan=document.getElementById("airport-name").getElementsByTagName("span");
+
+        for(var  i=0; i<aSpan.length ;i++){
+            aSpan[i].onclick = function(){
+                
+                var input0 = document.getElementById("od-in0");
+                var input1 = document.getElementById("od-in1");
+                if(in_type == 0){
+                    input0.value = this.textContent
+                }else if(in_type == 1){
+                    input1.value = this.textContent
+                }
+                
+                hidden()
+            };
+
+        }
+
+        //帮助提示
+        function show_help(){
+            $('.help').show();
+            $('#step1').show();
+            $('#blank').show();
+        }
+        
+
+        //下一步
+        $('.next').on('click',function(){
+            var obj = $(this).parents('.step');
+            var step = obj.attr('step');
+            obj.hide();
+            if(parseInt(step) == 2 || parseInt(step) == 3){
+                $("#show-search").click();
+                
+            }
+
+            $("#alink").click();
+            $('#step'+(parseInt(step)+1)).show();
+            switch(parseInt(step)+1){
+                case 1:
+                    $('#blank').removeClass();
+                    $('#blank').addClass("blank-left-top");
+                    break;
+                case 2:
+                    $('#blank').removeClass();
+                    $('#blank').addClass("blank-right-top");
+                    break;
+                case 3:
+                    $('#blank').removeClass();
+                    $('#blank').addClass("blank-date");
+                    break;
+                case 4:
+                    $('#blank').removeClass();
+                    $('#blank').addClass("blank-left-bottom");
+                    break;
+                case 5:
+                    $('#blank').removeClass();
+                    $('#blank').addClass("blank-right-bottom");
+                    break;
+            }
+        });
+
+        //已了解
+        $('.over').on('click',function(){
+            $(this).parents('.step').hide();
+            $('.help').hide();
+            //设置cookie
+            // 创建一个cookie并设置有效时间为365天:
+            
+            if(!$.cookie('tipVisible')){
+
+                $.cookie('tipVisible', 'no', {path:'/',expires: 365});
+
+            }
+            
+
+        });
+        
+
+        /*js实现sleep功能 单位：毫秒*/
+        function sleep(numberMillis) {
+            var now = new Date();
+            var exitTime = now.getTime() + numberMillis;
+            while (true) {
+                now = new Date();
+                if (now.getTime() > exitTime)
+                    return;
+            }
+        }
+
+
+
+    </script>
+</body>
+</html>

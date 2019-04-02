@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="FlightGo:小叶 傻彪 老杨">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>FlightGo-{{ .data.origin }}--{{ .data.destination }}-{{ .data.date }}</title>
+
+    <!-- Bootstrap -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="/static/css/filter.css">
+    <style type="text/css">
+       
+        #map ,#bar {
+            height: 700px;
+            /*
+            border-style:inset;
+            */   
+        }
+        
+
+        .body{
+          margin:-19px 100px 100px 100px;
+        }
+        
+        .plane_img{
+          width: 300px;
+          height: 150px;
+          display: inline-block;
+          margin: 0 auto;
+        }
+        .container-fluid{
+          background-color: #337ab7;
+
+        }
+        .container-fluid a{
+          color:#dff0d8;
+          
+        }
+        .search{
+          height: 35px;
+          width: 170px;
+          margin-right:70px;
+          
+        }
+        
+        .panel-info{
+          margin-top: 60px;
+        }
+        .form-group{
+          
+          margin-left:0px;
+          margin-right:20px;
+        }
+
+        .more-btn{
+          width: 160px;
+          margin-left: auto;
+          margin-right: auto;
+          
+        }
+
+        /*切换类型搜索*/
+        /*切换类型*/
+        #btn-sw-search-type{
+            height: 35px;
+            width: 182px;
+            background-color: #FFFFFF;
+            border:1px solid #C2C2C2;
+            border-radius:8px;
+
+        }
+        .btn-lg{
+            padding: 6px 15px;
+            font-size: 14px;
+        }
+        .action {
+
+            color: #FFFFFF !important;/*提高优选级*/
+            background-color: #3D86E5;
+        }
+        
+        .form-group a{
+            color: #9e9e9e;
+        }
+        .panel-heading{
+          font-size: 23px;
+        }
+
+        #subtitle{
+          padding-left: 20px;
+          font-size: 15px;
+          color: #9a9a9a;
+        }
+         /*提示框宽度*/
+        .typeahead{
+            width: 50px;
+        }
+
+
+        .table > tbody > tr > td{
+          line-height: 50px;
+        }
+
+        #tip{
+            position:absolute;
+            top:52px;
+            display: none;
+        }
+
+        .nav > li > a:focus, .nav > li > a:hover {
+            text-decoration: none;
+            background-color: #337ab7;
+        }
+    </style>  
+  </head>
+
+  <body>
+
+
+    <nav class="navbar ">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">FlightGo</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          
+          <ul class="nav navbar-nav">
+
+            <li class="active"><a href="/">首页</a></li>
+            <li><a href="/analysis/">数据聚合分析</a></li>
+
+          </ul>
+          <form name="form" class="navbar-form navbar-center navbar-right" action="/search/" method="get" onsubmit="return check_form()">
+
+            <div id="btn-sw-search-type" class="form-group" >
+                  <a id="fn" class="btn btn-lg ">按航班号</a>
+                  <a id="od" class="btn btn-lg action">按起降点</a>
+                  <input id="search-type" type="hidden" name="search-type" value="1">
+            </div>
+            <div class="form-group form-group-no">
+                  <input id="fn-in" type="hidden" name="flight_no" size="15" value="{{ .data.ident }}" placeholder="航班号 如：CA981" class="form-control flight-no">
+            </div>
+
+            <div class="form-group form-group-od">
+                  <input id="od-in0" data-provide="typeahead" data-items="4"
+                  type="text" size="12" name="flight_od_o" value="{{ .data.origin }}" placeholder="起飞地" class="form-control flight-od" onfocus="show_tip(this,true)" onblur="show_tip(this,false)" autocomplete="off">
+                  
+                    <img id="yqf" style="" src="/static/img/yqf.png" width="35px"/>
+                  
+                  <input id="od-in1" data-provide="typeahead" data-items="4"
+                  type="text" size="12" name="flight_od_d" value="{{ .data.destination }}" placeholder="降落地" class="form-control flight-od" onfocus="show_tip(this,true)" onblur="show_tip(this,false)" autocomplete="off">
+                  <div id="tip">
+                        <div id="cityFilterBox">
+                            <div class="cityFilterIn">
+                              <div class="cityFilterHead">
+                                <ul class="clearfix">
+                                  <li class="">热门</li>
+                                </ul>
+                              </div>
+                              <div class="cityFilterTable" id="cityFilterTable">
+                                <div class="cityFilterHot">
+                                  <ul>
+                                    <li style="padding-left:0">
+                                      <div class="cityFilterLabel"></div>
+                                      <div id="airport-name" class="cityByHot clearfix">
+                                        <span code="PEK">北京首都</span>
+                                        <span code="CAN">广州白云</span>
+                                        <span code="PVG">上海浦东</span>
+                                        <span code="SHA">上海虹桥</span>
+                                        <span code="CTU">成都双流</span>
+                                        <span code="SZX">深圳宝安</span>
+                                        <span code="KMG">昆明长水</span>
+                                        <span code="XIY">西安咸阳</span>
+                                        <span code="CKG">重庆江北</span>
+                                        <span code="HGH">杭州萧山</span>
+                                        <span code="XMN">厦门高崎</span>
+                                        <span code="NKG">南京禄口</span>
+                                        <span code="WUH">武汉天河</span>
+                                        <span code="SHE">沈阳桃仙</span>
+                                        <span code="TAO">青岛流亭</span>
+                                        <span code="FOC">福州长乐</span>
+                                        <span code="SYX">三亚凤凰</span>
+                                        <span code="TSN">天津滨海</span>
+                                      </div>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                  </div>      
+            </div>
+
+
+            <div class="form-group">
+
+               <div class="input-group date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                    <input class="form-control data-input" size="8" type="text" value="{{ .data.date }}" readonly>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+                <input type="hidden" id="dtp_input2" name="date" value="{{ .data.date }}" />
+
+              
+            </div>
+            <button type="submit" class="btn btn-success navbar-right search">查询</button>
+          </form>
+
+        </div>
+      </div>
+    </nav>
+
+    <div class="body">
+        
+        <div class="panel panel-info">
+          <div class="panel-heading">{{ .data.origin }}--{{ .data.destination }}
+            <span id="subtitle">{{ .data.month }}月{{ .data.day }}号 共{{ .data.length }}次航班</span></div>
+          <div class="panel-body">
+            <table class="table table-striped table-CA">
+              <tr>
+                <th>航班信息</th>
+                <th>机型</th>
+                <th>出发地</th>
+                <th>目的地</th>
+                <th>飞行时间</th>
+                <th>状态</th>
+              </tr>
+                {{ $year := .data.year}}
+                {{ $month := .data.month}}
+                {{ $day := .data.day }}
+              {{ range .data.result }}
+              <tr>
+                
+                  <td>
+                    <a href="/flight/{{ .ident }}/{{ $year }}/{{ $month }}/{{ $day }}/">
+                    <img src="{{ .log }}" height="50px">
+                    
+                      {{ .airline }}
+                      {{ .ident }}
+                    </a>
+                  </td>
+
+                  <td>{{ .aircraft }}</td>
+                
+
+                <td>{{ .origin }}</td>
+                <td>{{ .destination }}</td>
+                <td>{{ .fly_time }}</td>
+                <td>{{ .state }}</td>
+              </tr>
+
+         
+              {{ end }}
+              
+            </table>
+
+          </div>
+        </div>
+
+  </div>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap3-typeahead.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/static/js/locales/bootstrap-datetimepicker.fr.js" charset="UTF-8"></script>
+
+    <script type="text/javascript">
+
+      //类型切换
+      $("#fn").click(function() {
+          $("#od").removeClass("action");
+          $(this).addClass("action");
+
+          $(".flight-od").attr("type","hidden");
+          $(".flight-no").attr("type","text");
+          $("#yqf").attr("style","display: none;");
+          $("#search-type").attr("value","0");
+      });
+      $("#od").click(function() {
+          $("#fn").removeClass("action");
+          $(this).addClass("action");
+          $(".flight-od").attr("type","text");
+          $(".flight-no").attr("type","hidden");
+          $("#yqf").attr("style","");
+          $("#search-type").attr("value","1");
+      });
+
+      $("#yqf").click(function(){
+          var value1 = document.getElementById("od-in0").value;
+          var value2 = document.getElementById("od-in1").value;
+
+          document.getElementById("od-in0").value=value2;
+          document.getElementById("od-in1").value=value1;
+      });
+
+
+      //输入框提示
+      $.getJSON('/api/airports/',function(resp){
+          $("#od-in0").typeahead({source:resp["data"],updater:name_updater});
+          $("#od-in1").typeahead({source:resp["data"],updater:name_updater});
+      });
+      
+      //选中提示分割
+      name_updater = function(item){
+          
+          return item.split(" - ")[1]
+      }
+
+      $('.form_date').datetimepicker({
+            language:  'en',
+            weekStart: 1,
+            todayBtn:  1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            forceParse: 0
+      });
+      
+      function check_form()
+      {
+        
+        var type = $("#search-type").attr("value");
+        
+        if(type=="0"){
+
+            var fn  = $("#fn-in").val();
+            
+            var date = $("#dtp_input2").attr("value");
+            
+            if(fn != "" && date !=""){
+                return true;
+            }
+
+        }else if(type=="1"){
+
+            var o = $("#od-in0").val();
+            var d = $("#od-in1").val();
+            var date = $("#dtp_input2").attr("value");
+            
+
+            if(o != "" && d != "" && date != ""){
+                return true;
+            }
+
+        }
+        alert("请正确输入查询项");
+        return false;
+      }
+
+
+      //点选机场
+       var in_type = 0;
+
+       function show_tip(ele,hasFocus){
+            var tip = document.getElementById("tip");
+            if(hasFocus){
+                
+                if(ele.id == 'od-in0'){
+                    in_type = 0;
+                }else if(ele.id == 'od-in1'){
+                    in_type = 1;
+                }
+                setTimeout("hidden(true)","150");
+            }else{
+                setTimeout("hidden(false)","150");
+            }
+           
+       }
+       
+       function hidden(hasFocus){
+            var tip = document.getElementById("tip");
+            if(hasFocus){
+                tip.style.display = "block";
+            }else{
+
+                tip.style.display = "none";
+            }
+                
+        }
+       var aSpan=document.getElementById("airport-name").getElementsByTagName("span");
+
+        for(var  i=0; i<aSpan.length ;i++){
+            aSpan[i].onclick = function(){
+                
+                var input0 = document.getElementById("od-in0");
+                var input1 = document.getElementById("od-in1");
+                if(in_type == 0){
+                    input0.value = this.textContent
+                }else if(in_type == 1){
+                    input1.value = this.textContent
+                }
+                
+                hidden()
+            };
+
+        }
+    </script>
+  </body>
+</html>

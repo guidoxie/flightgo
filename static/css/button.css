@@ -1,0 +1,39 @@
+* { margin: 0; padding: 0; }
+.map-cg-btn a {	
+	 /* Positioning */
+	position: relative;
+	left: 8px;
+ 	 /* Box-model */
+ 	display: inline-block;
+	width: 45px;
+	height: 30px;
+ 	 /* Typography */
+ 	line-height: 30px;
+	text-align: center;
+	/*color: #000;*/
+	box-shadow: 0 0 1px #b1b1b1, inset 0 1px 5px #9e9c9c;
+	font-size: 16px;
+	text-decoration: none;
+ 	 /* Visual */
+	border-radius: 4px;
+  	/* Misc */
+}
+.map-cg-btn em {
+	font-size: 16px;
+}
+.map-cg-btn {
+	/*消除超链接默认空隙*/
+	font-size: 0; 
+}
+.be-btn {
+	color: #000 !important;
+	background-color: #e6e6e6;
+}
+.af-btn {
+	color: #aae82a !important;
+	background-color: #000;
+}
+
+
+
+

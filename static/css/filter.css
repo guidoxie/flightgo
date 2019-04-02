@@ -1,0 +1,48 @@
+* { margin: 0; padding: 0; }
+ul {
+	list-style: none;
+}
+.clearfix:after, .clearfix:before {
+    content: '';
+    display: table;
+}
+.clearfix:after {
+	clear: both;
+}
+.cityFilterHead {
+	border-bottom: 1px solid #ccc;
+	height: 42px;
+}
+#cityFilterBox {
+	width: 480px;
+	background-color: #fff;
+	color: #000;
+	box-shadow: 5px 5px 15px #ccc;
+}
+.cityFilterHead li {
+	padding: 10px;
+	float: left;
+	display: inline;
+	font-weight: 540;
+	cursor: default;
+}
+.cityFilterHead ul li:hover {
+	border-bottom: 1px solid #1E90FF;
+}
+.cityByHot {
+	clear: both;
+}
+.cityByHot span {
+	font-size: 14px;
+	float: left;
+	display: inline;
+	padding: 8px;
+	margin-top: 5px;
+	margin-right: 1px;
+	margin-bottom: 1px;
+	cursor: pointer;
+}
+.cityByHot span:hover {
+	background-color: #1E90FF;
+	color: #fff;
+}
