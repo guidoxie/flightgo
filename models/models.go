@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -90,7 +90,6 @@ type PageData struct {
 	FlightDatas
 	FlyTime string `json:"fly_time"`
 }
-
 
 // 初始化数据模型
 func init() {

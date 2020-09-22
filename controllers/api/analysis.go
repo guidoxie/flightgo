@@ -1,13 +1,13 @@
 package api
 
 import (
+	"encoding/json"
+	"flightgo/controllers/server"
 	"flightgo/models"
+	"flightgo/redis"
 	"flightgo/util"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"flightgo/controllers/server"
-	"encoding/json"
-	"flightgo/redis"
 )
 
 // 聚合分析
@@ -17,7 +17,6 @@ type AirportAnalysis struct {
 
 //获取机场聚合数据
 func (c *AirportAnalysis) Get() {
-
 
 	shortName := c.Ctx.Input.Param(":airport")
 	year := c.Ctx.Input.Param(":year")
@@ -200,13 +199,11 @@ type AirlineAnalysis struct {
 
 func (c *AirlineAnalysis) Get() {
 
-
 	shortName := c.Ctx.Input.Param(":airline")
 	year := c.Ctx.Input.Param(":year")
 	month := c.Ctx.Input.Param(":month")
 	day := c.Ctx.Input.Param(":day")
 	date := year + "-" + month + "-" + day
-
 
 	// 如果redis有数据则不查询数据库,直接返回
 	if server.RedisHex(c.Ctx, "airline_analysis", shortName+date) {
@@ -322,8 +319,6 @@ type CountryAnalysis struct {
 }
 
 func (c *CountryAnalysis) Get() {
-
-
 
 	country := c.Ctx.Input.Param(":country")
 	year := c.Ctx.Input.Param(":year")

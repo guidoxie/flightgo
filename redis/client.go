@@ -1,9 +1,9 @@
 package redis
 
 import (
+	"errors"
 	"github.com/go-redis/redis"
 	"sync"
-	"errors"
 )
 
 var once sync.Once
@@ -19,10 +19,10 @@ func RedisClient() *redis.Client {
 	})
 	return redisClient
 }
-func init(){
+func init() {
 	cli := RedisClient()
 	err := cli.Ping().Err()
 	if err != nil {
-		panic(errors.New("please start redis-server \n"+err.Error()))
+		panic(errors.New("please start redis-server \n" + err.Error()))
 	}
 }

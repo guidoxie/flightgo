@@ -131,7 +131,6 @@ type OneFlight struct {
 
 func (c *OneFlight) Get() {
 
-
 	ident := c.Ctx.Input.Param(":ident")
 	year := c.Ctx.Input.Param(":year")
 	month := c.Ctx.Input.Param(":month")
@@ -192,8 +191,6 @@ func (c *PageFlight) Get() {
 		Message: "success",
 	}
 	pageData := make([]models.PageData, 0)
-
-
 
 	var fd = make([]*models.FlightDatas, 0)
 
