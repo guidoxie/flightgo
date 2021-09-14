@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"flightgo/models"
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/guidoxie/flightgo/models"
 	"testing"
 )
 

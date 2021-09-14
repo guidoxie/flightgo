@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "flightgo/redis"
-	_ "flightgo/routers"
 	"github.com/astaxie/beego"
+	_ "github.com/guidoxie/flightgo/redis"
+	_ "github.com/guidoxie/flightgo/routers"
 )
 
 func main() {

@@ -1,11 +1,11 @@
 package view
 
 import (
-	"flightgo/models"
-	"flightgo/util"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/guidoxie/flightgo/models"
+	"github.com/guidoxie/flightgo/util"
 	"strconv"
 	"strings"
 )
