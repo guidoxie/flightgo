@@ -2,8 +2,8 @@ package server
 
 import (
 	"encoding/json"
-	"flightgo/redis"
 	"github.com/astaxie/beego/context"
+	"github.com/guidoxie/flightgo/redis"
 )
 
 // 从Redis读取key的数据,如果有,返回true并把数据返回给用户

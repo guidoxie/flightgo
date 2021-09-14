@@ -2,11 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"flightgo/controllers/server"
-	"flightgo/models"
-	"flightgo/redis"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/guidoxie/flightgo/controllers/server"
+	"github.com/guidoxie/flightgo/models"
+	"github.com/guidoxie/flightgo/redis"
 )
 
 // 准点率

@@ -1,9 +1,9 @@
 package view
 
 import (
-	"flightgo/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/guidoxie/flightgo/models"
 	"strings"
 	"time"
 )
