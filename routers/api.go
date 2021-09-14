@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"flightgo/controllers/api"
 	"github.com/astaxie/beego"
+	"github.com/guidoxie/flightgo/controllers/api"
 )
 
 func init() {
