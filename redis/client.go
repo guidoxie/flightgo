@@ -2,6 +2,7 @@ package redis
 
 import (
 	"errors"
+	"github.com/astaxie/beego"
 	"github.com/go-redis/redis"
 	"sync"
 )
@@ -13,7 +14,8 @@ var redisClient *redis.Client
 func RedisClient() *redis.Client {
 	once.Do(func() {
 		redisClient = redis.NewClient(&redis.Options{
-			Addr: ":6379",
+			Addr: beego.AppConfig.String("redisaddr"),
+			Password: beego.AppConfig.String("redispass"),
 		})
 
 	})
